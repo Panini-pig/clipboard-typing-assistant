@@ -19,6 +19,14 @@
     }
   }
 
+  function t(key, substitutions) {
+    try {
+      return chrome.i18n.getMessage(key, substitutions) || key;
+    } catch (_) {
+      return key;
+    }
+  }
+
   if (globalThis.__ctTypingAssistantInstalled && extensionAlive()) return;
   globalThis.__ctTypingAssistantInstalled = true;
 
@@ -124,8 +132,12 @@
     typeClipboard(message)
       .then((result) => sendResponse(result))
       .catch((error) => {
-        console.warn('[剪贴板键入] 输入失败：', error);
-        showToast('输入失败：' + String((error && error.message) || error), 'error', 3200);
+        console.warn('[Clipboard Typing] Input failed:', error);
+        showToast(
+          t('typeFailed', [String((error && error.message) || error)]),
+          'error',
+          3200
+        );
         sendResponse({ ok: false, reason: 'error' });
       });
 
@@ -138,7 +150,7 @@
 
   async function typeClipboard(message) {
     if (typingState) {
-      showToast('正在输入中，请稍候…', 'warn', 1200);
+      showToast(t('busy'), 'warn', 1200);
       return { ok: false, reason: 'busy' };
     }
 
@@ -151,8 +163,8 @@
       if (shouldShowNoTargetToast(message)) {
         showToast(
           message.source === 'shortcut'
-            ? '请先把光标放进输入框，再按快捷键'
-            : '没有找到可编辑的输入框，请先点击输入框内部再重试',
+            ? t('noTargetShortcut')
+            : t('noTargetMenu'),
           'error'
         );
       }
@@ -165,7 +177,7 @@
     } else {
       const clip = await readClipboardText();
       if (!clip.ok) {
-        showToast('读取剪贴板失败，请确认已复制内容后重试', 'error', 3200);
+        showToast(t('clipboardReadFailed'), 'error', 3200);
         return { ok: false, reason: 'clipboard-unavailable' };
       }
       text = clip.text;
@@ -173,7 +185,7 @@
 
     text = String(text || '').replace(/\r\n?/g, '\n');
     if (!text) {
-      showToast('剪贴板是空的', 'warn');
+      showToast(t('clipboardEmpty'), 'warn');
       return { ok: false, reason: 'empty' };
     }
 
@@ -187,7 +199,7 @@
 
     const el = prepareTarget(target);
     if (!el) {
-      showToast('目标输入框当前不可编辑', 'error');
+      showToast(t('targetNotEditable'), 'error');
       return { ok: false, reason: 'not-writable' };
     }
 
@@ -199,7 +211,7 @@
     };
 
     typingState = state;
-    showToast('正在从剪贴板输入…', 'info', 1200);
+    showToast(t('typingStarted'), 'info', 1200);
 
     try {
       if (isTextControl(el)) {
@@ -207,7 +219,7 @@
       } else if (isContentEditableTarget(el)) {
         await typeIntoContentEditable(el, text, state);
       } else {
-        showToast('当前元素不支持模拟输入', 'error');
+        showToast(t('unsupported'), 'error');
         return { ok: false, reason: 'unsupported' };
       }
     } finally {
@@ -215,20 +227,20 @@
     }
 
     if (state.cancelled) {
-      showToast('已停止输入', 'warn', 1600);
+      showToast(t('stopped'), 'warn', 1600);
       return { ok: false, reason: 'cancelled' };
     }
 
     if (state.failed) {
-      showToast('该输入框拒绝了模拟输入，内容可能未完整填入', 'error', 3200);
+      showToast(t('rejected'), 'error', 3200);
       return { ok: false, reason: 'failed' };
     }
 
     const limited = truncated || state.lengthLimited;
     showToast(
-      limited
-        ? `已输入 ${state.inserted} 个字符（受输入框长度限制，部分内容被截断）`
-        : `已输入 ${state.inserted} 个字符`,
+      t(limited ? 'typedCountTruncated' : 'typedCount', [
+        String(state.inserted),
+      ]),
       'success',
       2200
     );
@@ -613,7 +625,7 @@
     const multiline = el.tagName === 'TEXTAREA';
 
     if (pieces.length > 1 && graphemes.length > LONG_TEXT_THRESHOLD) {
-      showToast('内容较长，已自动分批输入…', 'info', 1500);
+      showToast(t('longTextBatching'), 'info', 1500);
     }
 
     for (let index = 0; index < pieces.length; index++) {
@@ -987,7 +999,10 @@
 
   function withTimeout(promise, ms) {
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error(`操作超时（${ms}ms）`)), ms);
+      const timer = setTimeout(
+        () => reject(new Error(t('timeout', [String(ms)]))),
+        ms
+      );
       promise.then(
         (value) => {
           clearTimeout(timer);

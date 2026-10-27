@@ -1,0 +1,169 @@
+{
+  "extName": {
+    "message": "Clipboard Typing Assistant"
+  },
+  "extShortName": {
+    "message": "ClipTyping"
+  },
+  "extDescription": {
+    "message": "Type clipboard content into web form fields that block pasting."
+  },
+  "actionTitle": {
+    "message": "Clipboard Typing Assistant"
+  },
+  "commandDescription": {
+    "message": "Input from clipboard (simulated keyboard)"
+  },
+  "menuTitle": {
+    "message": "Input from clipboard (simulated keyboard)"
+  },
+  "offscreenJustification": {
+    "message": "Read clipboard text to type it into a web form field"
+  },
+  "popupTitle": {
+    "message": "Clipboard Typing Assistant"
+  },
+  "heroSubtitle": {
+    "message": "Type into fields that block pasting"
+  },
+  "sectionUsage": {
+    "message": "How to use"
+  },
+  "step1": {
+    "message": "Copy the text you need (<kbd>Ctrl</kbd>+<kbd>C</kbd>)."
+  },
+  "step2": {
+    "message": "Right-click inside a text field on a web page."
+  },
+  "step3": {
+    "message": "Choose <strong>“Input from clipboard”</strong>."
+  },
+  "usageDesc": {
+    "message": "Typed character by character, like keyboard input. No paste event is fired, so paste blocking does not apply."
+  },
+  "shortcutLabel": {
+    "message": "Shortcut"
+  },
+  "shortcutHint": {
+    "message": "Press in a text field"
+  },
+  "shortcutUnset": {
+    "message": "Not set"
+  },
+  "sectionSettings": {
+    "message": "Input settings"
+  },
+  "inputModeLabel": {
+    "message": "Input mode"
+  },
+  "modeChar": {
+    "message": "Per character"
+  },
+  "modeInstant": {
+    "message": "Whole text"
+  },
+  "modeDescChar": {
+    "message": "Types one character at a time, closest to real keyboard input and most compatible."
+  },
+  "modeDescInstant": {
+    "message": "Inserts the whole text at once. Fastest, but some editors may only receive one input event."
+  },
+  "delayLabel": {
+    "message": "Typing delay"
+  },
+  "delayImmediate": {
+    "message": "Instant (fastest)"
+  },
+  "delay10": {
+    "message": "10 ms"
+  },
+  "delay30": {
+    "message": "30 ms"
+  },
+  "delay60": {
+    "message": "60 ms"
+  },
+  "delay120": {
+    "message": "120 ms (human-like)"
+  },
+  "delayDisabledTitle": {
+    "message": "Typing delay is not used in whole-text mode"
+  },
+  "tipLocal": {
+    "message": "· Local only: no network requests, no clipboard storage."
+  },
+  "tipLong": {
+    "message": "· Long text is typed in batches; press <kbd>Esc</kbd> to stop."
+  },
+  "tipRefresh": {
+    "message": "· Refresh open pages after installing or updating."
+  },
+  "footerShortcutHtml": {
+    "message": "Change the shortcut at <code>edge://extensions/shortcuts</code>"
+  },
+  "busy": {
+    "message": "Typing in progress, please wait…"
+  },
+  "noTargetShortcut": {
+    "message": "Place the cursor in a text field, then press the shortcut"
+  },
+  "noTargetMenu": {
+    "message": "No editable text field found. Click inside a field and try again."
+  },
+  "clipboardReadFailed": {
+    "message": "Could not read the clipboard. Copy the text again and retry."
+  },
+  "clipboardEmpty": {
+    "message": "The clipboard is empty"
+  },
+  "targetNotEditable": {
+    "message": "The target field is not editable right now"
+  },
+  "typingStarted": {
+    "message": "Typing from the clipboard…"
+  },
+  "unsupported": {
+    "message": "This element does not support simulated input"
+  },
+  "stopped": {
+    "message": "Typing stopped"
+  },
+  "rejected": {
+    "message": "The field rejected the simulated input; the text may be incomplete."
+  },
+  "typedCount": {
+    "message": "Typed $COUNT$ character(s)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "typedCountTruncated": {
+    "message": "Typed $COUNT$ character(s); the rest was truncated by the field's length limit",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "longTextBatching": {
+    "message": "Long text detected — typing in batches…"
+  },
+  "typeFailed": {
+    "message": "Input failed: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeout": {
+    "message": "Operation timed out ($MS$ ms)",
+    "placeholders": {
+      "ms": {
+        "content": "$1"
+      }
+    }
+  }
+}

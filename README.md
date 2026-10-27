@@ -1,8 +1,8 @@
-# 剪贴板键入助手
+# 剪贴板键入助手 / Clipboard Typing Assistant
 
 一个用于 Microsoft Edge（Chromium 内核）的浏览器扩展：在输入框右键选择 **「从剪贴板输入（模拟键盘）」**，把剪贴板内容以模拟键盘打字的方式填进去，绕过网站对粘贴（`Ctrl+V` / `paste` 事件）的限制。
 
-适用于网课 / 考试系统、政务与银行表单、论坛和后台编辑器等禁止粘贴的输入框。
+适用于长表单、培训系统、政务与银行表单、论坛和后台编辑器等禁止粘贴的输入框。界面支持**简体中文（默认）**和 **English**，会跟随浏览器 UI 语言。
 
 ![设置面板](docs/popup.png)
 
@@ -15,7 +15,15 @@
 - **多场景支持**：普通输入框、富文本 `contenteditable`、开放 Shadow DOM、iframe 子页面。
 - **快捷键**：默认 `Alt+Shift+V`，光标在输入框内时按下即可。
 - **可调输入方式**：逐字键入 / 整段输入；输入间隔 0–120ms；长文本自动分批，避免页面卡死。
+- **中英双语**：扩展名称、右键菜单、设置面板和页面提示条都跟随浏览器 UI 语言。
 - **本地处理**：不联网、不上报、不保存剪贴板内容。
+
+## 界面语言
+
+- `manifest.json` 使用 `"default_locale": "zh_CN"`，默认中文。
+- 语言文件在 `extension/_locales/zh_CN/` 和 `extension/_locales/en/`。
+- 中文环境显示「剪贴板键入助手」，英文环境显示「Clipboard Typing Assistant」。
+- 商店 listing 的中文语言在 Edge 合作伙伴中心「Manage languages」中添加。
 
 ## 安装（Edge）
 
@@ -25,7 +33,7 @@
 4. 建议点击工具栏的拼图图标，把「剪贴板键入助手」固定到工具栏。
 5. 刷新已经打开的网页（安装前打开的页面不会自动注入内容脚本）。
 
-> 如果 Edge 提示“是否允许来自其他商店的扩展”，选择允许即可。扩展没有上架商店，属于本地加载。
+> 如果 Edge 提示“是否允许来自其他商店的扩展”，选择允许即可。商店版本上传的是打包好的 zip，本地开发直接加载 `extension` 目录。
 
 ## 使用
 
@@ -90,18 +98,34 @@ node test/serve.mjs
 # 浏览器打开 http://127.0.0.1:8123/
 ```
 
-测试页包含 textarea、单行 input、contenteditable、Shadow DOM 输入框和 iframe 输入框，并实时统计 paste / input 事件次数。
+测试页包含 textarea、单行 input、contenteditable、Shadow DOM 输入框和 iframe 输入框，并实时统计 paste / input 事件次数。`test/paste-blocked-en.html` 是英文版表单，用于英文商店截图。
 
 端到端测试（需要安装 Edge，默认路径 `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`）：
 
 ```bash
 node test/serve.mjs        # 终端 1
-node tools/e2e-edge.mjs    # 终端 2
+
+# 终端 2：中文 UI（默认）
+$env:EDGE_LANG='zh-CN'; node tools/e2e-edge.mjs
+
+# 终端 2：英文 UI
+$env:EDGE_LANG='en-US'; node tools/e2e-edge.mjs
 ```
 
-`tools/e2e-edge.mjs` 会用无头 Edge 加载扩展，通过 CDP 自动验证 15 项：右键菜单注册、textarea / input / contenteditable / Shadow DOM / iframe 输入、paste 事件为 0、剪贴板读取、快捷键注册、Popup 设置页等。截图输出到 `tools/out/`。
+`tools/e2e-edge.mjs` 会用无头 Edge 加载扩展，通过 CDP 自动验证 17 项：中文/英文 UI 与菜单标题、右键菜单注册、textarea / input / contenteditable / Shadow DOM / iframe 输入、paste 事件为 0、本地化提示条、剪贴板读取、快捷键注册、Popup 设置页等。截图输出到 `tools/out/`。
 
 > 如果 Edge 不在默认路径，修改 `tools/e2e-edge.mjs` 里的 `EDGE` 常量。
+
+## 商店图片
+
+`store/` 下已经生成中英文两套素材：
+
+- `logo-300.png`：扩展 logo（300×300）
+- `screenshot-zh-1.png`、`screenshot-zh-2.png`、`screenshot-en-1.png`、`screenshot-en-2.png`：1280×800
+- `small-promo-zh-440x280.png`、`small-promo-en-440x280.png`
+- `large-promo-zh-1400x560.png`、`large-promo-en-1400x560.png`
+
+修改界面或文案后运行 `python tools/make_store_assets.py` 重新生成。
 
 ## 已知限制
 
@@ -119,21 +143,27 @@ node tools/e2e-edge.mjs    # 终端 2
 
 ```
 extension/            可直接“加载解压缩的扩展”的目录
-  manifest.json
+  manifest.json       default_locale: zh_CN，名称/描述使用 __MSG__
+  _locales/
+    zh_CN/messages.json
+    en/messages.json
   background.js       Service Worker：右键菜单、快捷键、剪贴板兜底
-  content.js          输入核心：目标定位、逐字/整段写入、提示条
+  content.js          输入核心：目标定位、逐字/整段写入、本地化提示条
   offscreen.html/js   读取剪贴板的不可见页面
-  popup.html/css/js   工具栏设置面板
+  popup.html/css/js   工具栏设置面板（中英双语）
   icons/              图标
 test/
-  paste-blocked.html  禁用粘贴测试页
-  frame.html          iframe 子页面
-  serve.mjs           本地静态服务器
+  paste-blocked.html    中文禁用粘贴测试页
+  paste-blocked-en.html 英文禁用粘贴表单（商店截图用）
+  frame.html            iframe 子页面
+  serve.mjs             本地静态服务器
 tools/
-  make_icons.py       生成图标
-  e2e-edge.mjs        Edge + CDP 端到端测试
-docs/                 截图
-release/              打包好的 zip
+  make_icons.py         生成图标
+  make_store_assets.py  生成中英文商店截图/宣传图
+  e2e-edge.mjs          Edge + CDP 端到端测试
+store/                  中英文商店图片（Edge 合作伙伴中心上传）
+docs/                   截图
+release/                打包好的 zip
 ```
 
 ## 开发说明

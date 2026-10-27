@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "剪贴板键入助手",
-  "short_name": "剪贴板键入",
-  "version": "1.0.0",
-  "description": "在输入框右键选择“从剪贴板输入”，把剪贴板内容以模拟键盘打字的方式填入，绕过网站禁止粘贴的限制。",
+  "default_locale": "zh_CN",
+  "name": "__MSG_extName__",
+  "short_name": "__MSG_extShortName__",
+  "version": "1.1.1",
+  "description": "__MSG_extDescription__",
   "minimum_chrome_version": "116",
   "icons": {
     "16": "icons/icon16.png",
@@ -38,7 +39,7 @@
     }
   ],
   "action": {
-    "default_title": "剪贴板键入助手",
+    "default_title": "__MSG_actionTitle__",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
@@ -52,7 +53,7 @@
       "suggested_key": {
         "default": "Alt+Shift+V"
       },
-      "description": "从剪贴板输入（模拟键盘）"
+      "description": "__MSG_commandDescription__"
     }
   }
 }

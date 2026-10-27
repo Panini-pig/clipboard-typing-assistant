@@ -2,7 +2,8 @@
 'use strict';
 
 const MENU_ID = 'ct-paste-as-typing';
-const MENU_TITLE = '从剪贴板输入（模拟键盘）';
+const MENU_TITLE =
+  chrome.i18n.getMessage('menuTitle') || '从剪贴板输入（模拟键盘）';
 const OFFSCREEN_URL = 'offscreen.html';
 const OFFSCREEN_TARGET = 'ct-offscreen';
 const CONTENT_SCRIPT = 'content.js';
@@ -27,7 +28,7 @@ function createMenu() {
   } catch (error) {
     // 某些 Edge 版本不支持菜单的扩展属性；创建基础菜单失败时也不应
     // 中断 Service Worker 后续初始化（消息、快捷键等）。
-    console.warn('[剪贴板键入] 创建右键菜单失败：', error);
+    console.warn('[Clipboard Typing] Failed to create the context menu:', error);
   }
 }
 
@@ -46,7 +47,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId !== MENU_ID) return;
   if (!tab || typeof tab.id !== 'number') return;
   handleMenuClick(tab, info.frameId ?? 0).catch((error) => {
-    console.warn('[剪贴板键入] 右键菜单处理失败：', error);
+    console.warn('[Clipboard Typing] Context menu handler failed:', error);
     flashBadge();
   });
 });
@@ -62,7 +63,7 @@ async function handleMenuClick(tab, frameId) {
     await sendMessageToFrame(tab.id, frameId, message);
   } catch (error) {
     // 受限页面（edge://、扩展商店等）无法注入，给个角标提示
-    console.warn('[剪贴板键入] 无法在当前页面执行：', error);
+    console.warn('[Clipboard Typing] Cannot run on this page:', error);
     flashBadge();
   }
 }
@@ -74,7 +75,7 @@ async function handleMenuClick(tab, frameId) {
 chrome.commands.onCommand.addListener((command) => {
   if (command !== 'paste-as-typing') return;
   triggerShortcut().catch((error) => {
-    console.warn('[剪贴板键入] 快捷键处理失败：', error);
+    console.warn('[Clipboard Typing] Shortcut handler failed:', error);
   });
 });
 
@@ -102,7 +103,7 @@ async function triggerShortcut() {
       await delay(80);
       await chrome.tabs.sendMessage(tab.id, message);
     } catch (injectError) {
-      console.warn('[剪贴板键入] 快捷键无法在当前页面执行：', injectError);
+      console.warn('[Clipboard Typing] Shortcut cannot run on this page:', injectError);
       flashBadge();
     }
   }
@@ -160,7 +161,9 @@ async function ensureOffscreenDocument() {
     await chrome.offscreen.createDocument({
       url: OFFSCREEN_URL,
       reasons: ['CLIPBOARD'],
-      justification: '读取剪贴板文本，用于以模拟键盘输入的方式填入网页输入框',
+      justification:
+        chrome.i18n.getMessage('offscreenJustification') ||
+        'Read clipboard text to type it into a web form field',
     });
   } catch (error) {
     // 并发创建时可能已被另一个调用创建

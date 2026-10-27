@@ -12,6 +12,7 @@ const PROFILE = path.join(ROOT, '.edge-test-profile');
 const OUT = path.join(ROOT, 'tools', 'out');
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const PORT = 9333;
+const LANG = process.env.EDGE_LANG || 'zh-CN';
 const TEST_URL = 'http://127.0.0.1:8123/test/paste-blocked.html';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -81,7 +82,8 @@ class CDP {
   }
 }
 
-async function findExtensionWorker(cdp, name, timeoutMs) {
+async function findExtensionWorker(cdp, names, timeoutMs) {
+  const wanted = Array.isArray(names) ? names : [names];
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     const { targetInfos } = await cdp.send('Target.getTargets');
@@ -106,7 +108,7 @@ async function findExtensionWorker(cdp, name, timeoutMs) {
           },
           sessionId
         );
-        if (result.result && result.result.value === name) {
+        if (result.result && wanted.includes(result.result.value)) {
           matched = true;
           return { target, sessionId };
         }
@@ -204,6 +206,7 @@ async function main() {
     [
       '--headless=new',
       `--remote-debugging-port=${PORT}`,
+      `--lang=${LANG}`,
       `--user-data-dir=${PROFILE}`,
       `--disable-extensions-except=${EXT}`,
       `--load-extension=${EXT}`,
@@ -222,7 +225,11 @@ async function main() {
     const version = await waitForEndpoint(15000);
     cdp = await CDP.connect(version.webSocketDebuggerUrl);
 
-    const found = await findExtensionWorker(cdp, '剪贴板键入助手', 15000);
+    const found = await findExtensionWorker(
+      cdp,
+      ['剪贴板键入助手', 'Clipboard Typing Assistant'],
+      15000
+    );
     if (!found) {
       const { targetInfos } = await cdp.send('Target.getTargets');
       console.error(
@@ -241,6 +248,21 @@ async function main() {
       cdp,
       swSession,
       `globalThis.__e2eKeepAlive = setInterval(() => chrome.runtime.getPlatformInfo(() => {}), 4000); 'ok'`
+    );
+
+    const uiLanguage = await evaluate(cdp, swSession, 'chrome.i18n.getUILanguage()');
+    const menuTitle = await evaluate(
+      cdp,
+      swSession,
+      `chrome.i18n.getMessage('menuTitle')`
+    );
+    const expectedMenuTitle = LANG.startsWith('zh')
+      ? '从剪贴板输入（模拟键盘）'
+      : 'Input from clipboard (simulated keyboard)';
+    check(
+      '界面语言与右键菜单标题已本地化',
+      menuTitle === expectedMenuTitle,
+      JSON.stringify({ uiLanguage, menuTitle, expectedMenuTitle })
     );
 
     const swErrors = [];
@@ -322,6 +344,20 @@ async function main() {
 
     let taValue = await evaluate(cdp, pageSession, `document.getElementById('ta').value`);
     check('textarea 逐字输入完整', taValue === defaultText, JSON.stringify(taValue));
+
+    const toastText = await evaluate(
+      cdp,
+      pageSession,
+      `(document.querySelector('ct-typing-toast')?.shadowRoot?.querySelector('.box')?.textContent) || ''`
+    );
+    const expectedToast = LANG.startsWith('zh')
+      ? `已输入 ${defaultText.length} 个字符`
+      : `Typed ${defaultText.length} character(s)`;
+    check(
+      '输入完成提示已本地化',
+      toastText.includes(expectedToast),
+      JSON.stringify({ toastText, expectedToast })
+    );
 
     let pasteCount = await evaluate(
       cdp,

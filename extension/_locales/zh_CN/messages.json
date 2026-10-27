@@ -1,0 +1,169 @@
+{
+  "extName": {
+    "message": "剪贴板键入助手"
+  },
+  "extShortName": {
+    "message": "剪贴板键入"
+  },
+  "extDescription": {
+    "message": "在网站禁用粘贴时，用模拟键盘输入把剪贴板内容填进网页输入框。"
+  },
+  "actionTitle": {
+    "message": "剪贴板键入助手"
+  },
+  "commandDescription": {
+    "message": "从剪贴板输入（模拟键盘）"
+  },
+  "menuTitle": {
+    "message": "从剪贴板输入（模拟键盘）"
+  },
+  "offscreenJustification": {
+    "message": "读取剪贴板文本，用于以模拟键盘输入的方式填入网页输入框"
+  },
+  "popupTitle": {
+    "message": "剪贴板键入助手"
+  },
+  "heroSubtitle": {
+    "message": "把剪贴板内容“打”进禁止粘贴的输入框"
+  },
+  "sectionUsage": {
+    "message": "使用方法"
+  },
+  "step1": {
+    "message": "复制要输入的内容（<kbd>Ctrl</kbd> + <kbd>C</kbd>）。"
+  },
+  "step2": {
+    "message": "在网页的输入框里点右键。"
+  },
+  "step3": {
+    "message": "选择 <strong>“从剪贴板输入（模拟键盘）”</strong>。"
+  },
+  "usageDesc": {
+    "message": "内容会像键盘打字一样逐字写入，网站收不到 paste 事件，所以“禁止粘贴”对它无效。"
+  },
+  "shortcutLabel": {
+    "message": "快捷键"
+  },
+  "shortcutHint": {
+    "message": "光标在输入框内时按下"
+  },
+  "shortcutUnset": {
+    "message": "未设置"
+  },
+  "sectionSettings": {
+    "message": "输入设置"
+  },
+  "inputModeLabel": {
+    "message": "输入方式"
+  },
+  "modeChar": {
+    "message": "逐字键入"
+  },
+  "modeInstant": {
+    "message": "整段输入"
+  },
+  "modeDescChar": {
+    "message": "逐字触发输入事件，最接近真人打字，兼容性最好。"
+  },
+  "modeDescInstant": {
+    "message": "一次性写入整段文本，速度最快；个别编辑器可能只收到一次输入事件。"
+  },
+  "delayLabel": {
+    "message": "输入间隔"
+  },
+  "delayImmediate": {
+    "message": "立即（最快）"
+  },
+  "delay10": {
+    "message": "10 毫秒"
+  },
+  "delay30": {
+    "message": "30 毫秒"
+  },
+  "delay60": {
+    "message": "60 毫秒"
+  },
+  "delay120": {
+    "message": "120 毫秒（接近真人）"
+  },
+  "delayDisabledTitle": {
+    "message": "整段输入模式下不使用输入间隔"
+  },
+  "tipLocal": {
+    "message": "· 全部在本地处理，不联网、不保存剪贴板内容。"
+  },
+  "tipLong": {
+    "message": "· 长文本会自动分批输入；输入过程中按 <kbd>Esc</kbd> 可停止。"
+  },
+  "tipRefresh": {
+    "message": "· 安装或更新扩展后，请刷新已打开的网页再使用。"
+  },
+  "footerShortcutHtml": {
+    "message": "快捷键可在 <code>edge://extensions/shortcuts</code> 中修改"
+  },
+  "busy": {
+    "message": "正在输入中，请稍候…"
+  },
+  "noTargetShortcut": {
+    "message": "请先把光标放进输入框，再按快捷键"
+  },
+  "noTargetMenu": {
+    "message": "没有找到可编辑的输入框，请先点击输入框内部再重试"
+  },
+  "clipboardReadFailed": {
+    "message": "读取剪贴板失败，请确认已复制内容后重试"
+  },
+  "clipboardEmpty": {
+    "message": "剪贴板是空的"
+  },
+  "targetNotEditable": {
+    "message": "目标输入框当前不可编辑"
+  },
+  "typingStarted": {
+    "message": "正在从剪贴板输入…"
+  },
+  "unsupported": {
+    "message": "当前元素不支持模拟输入"
+  },
+  "stopped": {
+    "message": "已停止输入"
+  },
+  "rejected": {
+    "message": "该输入框拒绝了模拟输入，内容可能未完整填入"
+  },
+  "typedCount": {
+    "message": "已输入 $COUNT$ 个字符",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "typedCountTruncated": {
+    "message": "已输入 $COUNT$ 个字符（受输入框长度限制，部分内容被截断）",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "longTextBatching": {
+    "message": "内容较长，已自动分批输入…"
+  },
+  "typeFailed": {
+    "message": "输入失败：$ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeout": {
+    "message": "操作超时（$MS$ms）",
+    "placeholders": {
+      "ms": {
+        "content": "$1"
+      }
+    }
+  }
+}

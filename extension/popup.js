@@ -8,10 +8,38 @@ const MODE_DESC = document.getElementById('modeDesc');
 const DELAY_SELECT = document.getElementById('delay');
 const MODE_RADIOS = Array.from(document.querySelectorAll('input[name="inputMode"]'));
 
-const MODE_DESCRIPTIONS = {
-  char: '逐字触发输入事件，最接近真人打字，兼容性最好。',
-  instant: '一次性写入整段文本，速度最快；个别编辑器可能只收到一次输入事件。',
+const MODE_DESCRIPTION_KEYS = {
+  char: 'modeDescChar',
+  instant: 'modeDescInstant',
 };
+
+function t(key, substitutions) {
+  try {
+    return chrome.i18n.getMessage(key, substitutions) || key;
+  } catch (_) {
+    return key;
+  }
+}
+
+function applyI18n() {
+  for (const el of document.querySelectorAll('[data-i18n]')) {
+    el.textContent = t(el.dataset.i18n);
+  }
+  for (const el of document.querySelectorAll('[data-i18n-html]')) {
+    el.innerHTML = t(el.dataset.i18nHtml);
+  }
+  for (const el of document.querySelectorAll('[data-i18n-aria-label]')) {
+    el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel));
+  }
+
+  document.title = t('popupTitle');
+  try {
+    const uiLanguage = chrome.i18n.getUILanguage();
+    document.documentElement.lang = uiLanguage.replace(/_/g, '-');
+  } catch (_) {
+    /* keep the markup language */
+  }
+}
 
 function currentMode() {
   const checked = MODE_RADIOS.find((radio) => radio.checked);
@@ -20,9 +48,9 @@ function currentMode() {
 
 function updateModeUi() {
   const mode = currentMode();
-  MODE_DESC.textContent = MODE_DESCRIPTIONS[mode] || MODE_DESCRIPTIONS.char;
+  MODE_DESC.textContent = t(MODE_DESCRIPTION_KEYS[mode] || MODE_DESCRIPTION_KEYS.char);
   DELAY_SELECT.disabled = mode === 'instant';
-  DELAY_SELECT.title = mode === 'instant' ? '整段输入模式下不使用输入间隔' : '';
+  DELAY_SELECT.title = mode === 'instant' ? t('delayDisabledTitle') : '';
 }
 
 async function saveSettings() {
@@ -36,7 +64,7 @@ async function saveSettings() {
 }
 
 function formatShortcut(shortcut) {
-  if (!shortcut) return '未设置';
+  if (!shortcut) return t('shortcutUnset');
   return shortcut
     .replace(/Command/g, '⌘')
     .replace(/MacCtrl/g, '⌃')
@@ -58,6 +86,8 @@ async function loadShortcut() {
 }
 
 async function init() {
+  applyI18n();
+
   try {
     VERSION_EL.textContent = 'v' + chrome.runtime.getManifest().version;
   } catch (_) {
